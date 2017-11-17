@@ -1,5 +1,3 @@
-'use strict';
-
 const events = require('events');
 const net = require('net');
 const fs = require('fs');
@@ -53,15 +51,14 @@ class Redis extends events.EventEmitter {
 
   _bindCommands() {
     const self = this;
-        // 绑定命令
+    // 绑定命令
     // 从文件读取命令列表
     const cmdList = fs.readFileSync(path.resolve(__dirname, 'cmd.txt')).toString().split('\n');
     for (const cmd of cmdList) {
 
       // 同时支持大写和小写的函数名
-      // this[cmd.toLowerCase()] = this[cmd.toUpperCase()] = bind(cmd);
-      this[cmd] = (key ,callback) => {
-        this.sendCommand(`${cmd} ${key}`,callback)
+      this[cmd.toLowerCase()] = this[cmd.toUpperCase()] = (key ,callback) => {
+        return this.sendCommand(`${cmd} ${key}`,callback)
       }
     }
 

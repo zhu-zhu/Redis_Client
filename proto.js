@@ -1,11 +1,3 @@
-'use strict';
-
-/**
- * 简单 Redis 客户端
- *
- * @author Zongmin Lei <leizongmin@gmail.com>
- */
-
 class RedisProto {
 
   constructor() {
