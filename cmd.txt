@@ -1,6 +1,6 @@
-GET
-SET
-AUTH
-MULTI
-EXEC
-KEYS
+get
+set
+auth
+multi
+exec
+keys

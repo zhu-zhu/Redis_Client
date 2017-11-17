@@ -2,6 +2,8 @@
 
 const events = require('events');
 const net = require('net');
+const fs = require('fs');
+const path = require('path');
 const RedisProto = require('./proto');
 
 class Redis extends events.EventEmitter {
@@ -11,9 +13,8 @@ class Redis extends events.EventEmitter {
 
     // 默认连接配置
     options = options || {};
-    options.host = options.host || '10.3.14.84';
+    options.host = options.host || '127.0.0.1';
     options.port = options.port || 6379;
-    options.pass = options.pass || 'redisPassword123321'
     this.options = options;
 
     // 连接状态
@@ -25,7 +26,7 @@ class Redis extends events.EventEmitter {
 
     this._proto = new RedisProto();
 
-    this.connection = net.createConnection(options.port, options.host, options.pass, () => {
+    this.connection = net.createConnection(options.port, options.host, () => {
       this._isConnected = true;
       this.emit('connect');
     });
@@ -46,6 +47,23 @@ class Redis extends events.EventEmitter {
     this.connection.on('data', data => {
       this._pushData(data);
     });
+
+    this._bindCommands();
+  }
+
+  _bindCommands() {
+    const self = this;
+        // 绑定命令
+    // 从文件读取命令列表
+    const cmdList = fs.readFileSync(path.resolve(__dirname, 'cmd.txt')).toString().split('\n');
+    for (const cmd of cmdList) {
+
+      // 同时支持大写和小写的函数名
+      // this[cmd.toLowerCase()] = this[cmd.toUpperCase()] = bind(cmd);
+      this[cmd] = (key ,callback) => {
+        this.sendCommand(`${cmd} ${key}`,callback)
+      }
+    }
 
   }
 
