@@ -4,3 +4,4 @@ auth
 multi
 exec
 keys
+hello
